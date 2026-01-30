@@ -1,8 +1,13 @@
+"use client";
 import React from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 import { SignInButton } from '@clerk/nextjs'
+import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+
+
 
 const MenuOptions=[
     {
@@ -18,6 +23,7 @@ const MenuOptions=[
 ]
 
 function Header() {
+  const { user } = useUser();
   return (
     <div className='flex items-center justify-between p-4 shadow'>
         {/* Logo x */}
@@ -30,17 +36,25 @@ function Header() {
             {MenuOptions.map((menu, index) =>(
                 <Button variant={'ghost'} key={index}>{menu.name}</Button>
             ))}
-
         </div>
-        {/* Get Started Button */}
+        {/* Get Started button */}
         <div>
-            <SignInButton mode='modal' forceRedirectUrl={'/workspace'}>
-            <Button>Get Started <ArrowRight/></Button>
-            </SignInButton>
-        </div>
-        
+        {!user ? (
+        <SignInButton mode='modal' forceRedirectUrl={'/workspace'}>
+            <Button>
+            Get Started <ArrowRight />
+            </Button>
+        </SignInButton>
+        ) : (
+        <Link href={'/workspace'}>
+            <Button>
+            Get Started <ArrowRight />
+            </Button>
+        </Link>
+        )}
+    </div>
     </div>
   )
 }
 
-export default Header
+export default Header;
