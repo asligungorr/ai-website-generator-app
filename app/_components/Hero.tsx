@@ -1,9 +1,13 @@
 "use client"
 import { Button } from '@/components/ui/button'
-import { SignIn, SignInButton } from '@clerk/nextjs'
+import { SignIn, SignInButton, useUser } from '@clerk/nextjs'
 import { Description } from '@radix-ui/react-dialog'
-import { ArrowUp, HomeIcon, ImagePlus, Key, LayoutDashboard, User } from 'lucide-react'
+import axios from 'axios'
+import { ArrowUp, HomeIcon, ImagePlus, Key, LayoutDashboard, Loader2 as Loader2Icon, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
+import { toast } from 'sonner'
+import { v4 as uuidv4 } from 'uuid';
 
 
 const suggestions = [
@@ -30,9 +34,44 @@ const suggestions = [
 ]
 
 
+
+
+
 function Hero() {
 
     const [userInput,setUserInput]=useState<string>();
+    const {user} = useUser();
+    const router = useRouter();
+    const [loading,setLoading]=useState(false);
+
+
+    const CreateNewProject = async() => {
+      setLoading(true);
+      const projectId = uuidv4();
+      const frameId = generateRandomFrameNumber();
+      const messages = [
+        {
+          role:'user',
+          content:userInput
+        }
+      ]
+      try{
+        const result=await axios.post('/api/projects',{
+          projectId:projectId,
+          frameId:frameId,
+          messages:messages
+        });
+        console.log(result.data);
+        toast.success('Project created!')
+        router.push(`/playground/${projectId}?frameId=${frameId}`)
+        setLoading(false);
+      }catch(e){
+        toast.error('Internal Server Error!')
+        console.log(e);
+        setLoading(false);
+
+      }
+    }
   return (
     <div className='flex flex-col items-center h-[80vh] justify-center'>
         {/* Header & Description  */}
@@ -46,10 +85,20 @@ function Hero() {
                 className='w-full h-24 focus:outline-none focus:ring-0 resize-none'
             />
             <div className='flex justify-between items-center'>
-                <Button variant={'ghost'} ><ImagePlus/></Button>
-                <SignInButton mode='modal' forceRedirectUrl={'/workspace'}>
-                    <Button disabled={!userInput}><ArrowUp/></Button>
-                </SignInButton>
+                <Button variant={'ghost'}><ImagePlus /></Button>
+                
+                {!user ? (
+                    <SignInButton mode='modal' forceRedirectUrl={'/workspace'}>
+                        <Button disabled={!userInput}><ArrowUp /></Button>
+                    </SignInButton>
+                ) : (
+                    <Button 
+                        disabled={!userInput || loading} 
+                        onClick={CreateNewProject}>
+                    
+                    {loading?<Loader2Icon className='animate-spin'/> : <ArrowUp />}
+                    </Button>
+                )}
             </div>
         </div>
         {/* suggestion list  */}
@@ -68,3 +117,8 @@ function Hero() {
 }
 
 export default Hero
+
+const generateRandomFrameNumber=()=>{
+  const num= Math.floor(Math.random()*10000);
+  return num;
+}
