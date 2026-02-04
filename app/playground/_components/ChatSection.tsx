@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button'
 
 type Props={
   messages:Messages[],
-  onSend:any
+  onSend:any,
+  loading:boolean
 }
 
 
-function ChatSection({messages, onSend}:Props) {
+function ChatSection({messages, onSend,loading}:Props) {
   const [input,setInput]=useState<string>();
 
   const handleSend=()=>{
@@ -44,6 +45,13 @@ function ChatSection({messages, onSend}:Props) {
               ))
 
           )}
+
+          {loading && <div className='flex justify-center items-center p-4'>
+            <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-800'></div>
+            <span className='ml-2 text-zinc-800'>Thinking... Working on your request</span>
+          
+          </div>}
+
     
       </div>
 
@@ -55,7 +63,7 @@ function ChatSection({messages, onSend}:Props) {
                     px-3 py-2 focus:outline-none focus:ring-2'
                     onChange={(event)=>setInput(event.target.value)}
                 />
-                <Button> <ArrowUp/> </Button>
+                <Button onClick={handleSend}> <ArrowUp/> </Button>
 
             </div>
 
