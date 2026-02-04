@@ -16,7 +16,7 @@ export async function GET(req:NextRequest){
 
     const finalResult = {
         ...frameResult[0],
-        chatMessages:chatResult[0].chatMessage
+        chatMessages: chatResult?.[0]?.chatMessage ?? []
     }
 
 
