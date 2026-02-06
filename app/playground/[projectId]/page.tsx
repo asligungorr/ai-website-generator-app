@@ -99,6 +99,8 @@ function PlayGround() {
 
         const userMsg= result.data?.chatMessages[0].content;
         SendMessage(userMsg);
+      }else{
+        setMessages(result.data?.chatMessages);
       }
 
     }
@@ -188,10 +190,18 @@ function PlayGround() {
     }
 
     useEffect(()=>{
-        console.log(generatedCode);
-    },[generatedCode]);
+        if(messages.length > 0){
+            SaveMessages();
+        }
+    },[messages]);
 
-
+    const SaveMessages=async()=>{
+        const result= await axios.put('/api/chats',{
+          messages:messages,
+          frameId:frameId
+        });
+        console.log(result);
+    }
     
   return (
     <div>
