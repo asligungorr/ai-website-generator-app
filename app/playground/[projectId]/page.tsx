@@ -119,7 +119,17 @@ function PlayGround() {
        
         ]  )
         const text = userInput.trim().toLowerCase();
-        const isSmallTalk = text === "hi" || text === "hello" || text === "selam" || text === "merhaba";
+        const isSmallTalk =
+        text === "hi" ||
+        text === "hello" ||
+        text === "selam" ||
+        text === "merhaba" ||
+        text === "how are you" ||
+        text === "how are you?" ||
+        text === "nasılsın" ||
+        text === "nasılsın?" ||
+        text === "naber" ||
+        text === "naber?";
 
         const contentToSend = isSmallTalk
           ? userInput
@@ -214,7 +224,7 @@ function PlayGround() {
             loading={loading}/>
             
 
-            <WebsiteDesign/>
+            <WebsiteDesign generatedCode={generatedCode?.replace('```','')} />
             
         </div>
     </div>
