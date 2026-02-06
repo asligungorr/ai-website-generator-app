@@ -6,6 +6,7 @@ import WebsiteDesign from '../_components/WebsiteDesign'
 import ElementSettingSection from '../_components/ElementSettingSection'
 import { useParams, useSearchParams } from 'next/navigation'
 import axios from 'axios';
+import { toast } from 'sonner';
 
 
 export type Frame={
@@ -95,6 +96,10 @@ function PlayGround() {
       const result = await axios.get('/api/frames?frameId='+frameId+ "&projectId="+ projectId)
       console.log(result.data);
       setFrameDetail(result.data);
+      const designCode = result.data?.designCode;
+      const index=designCode.indexOf("```html")+7;
+      const formattedCode = designCode.slice(index);
+      setGeneratedCode(formattedCode);
       if(result.data?.chatMessages?.length==1){
 
         const userMsg= result.data?.chatMessages[0].content;
@@ -182,6 +187,7 @@ function PlayGround() {
           }
           
           }
+          await SaveGeneratedCode(aiResponse);
           if(!isCode)
           {
             setMessages((prev:any) => [
@@ -195,6 +201,7 @@ function PlayGround() {
             ])
 
           }
+          
           setLoading(false);
 
     }
@@ -212,6 +219,21 @@ function PlayGround() {
         });
         console.log(result);
     }
+
+
+
+    const SaveGeneratedCode=async(code:string)=>{
+      const result=await axios.put('/api/frames', {
+        designCode:code,
+        frameId:frameId,
+        projectId:projectId
+      });
+      console.log(result.data);
+      toast.success('Website is Ready!')
+    }
+
+
+
     
   return (
     <div>
